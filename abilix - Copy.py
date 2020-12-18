@@ -7,22 +7,41 @@ Created on Mon Dec  9 18:42:53 2019
 documentation
 
 initialize() - starts the robot
-startmotor(distance) - moves forward in a specific distance in milimeters
-leftlineturn(lturnspeed) - turns left after detection by linefollow
-rightlineturn(lturnspeed) - turns right after detection by linefollow
-turnleft(degree) - turn to a specified degree to the left
-turnright(degree) - turn to a specified degree to the right
-lineturn(Lspeed,Rspeed) - turn after linefollow detection
-linefollow(inter=t,l,r) - detects either one of the three types of intersection
-motor(motor,power) - motor = motor# - power = strength of motor
-wait(time) - amount of time the robot will remain not moving
-stopmotor() - turn off all moving motors
-time(distance) - amount of distance it will follow the line
 end() - finishes the program
 clear() - clears the file you wrote
+button() - button function
 clipboard() - copies program to clipboard for WIN 
-motordeg(port, direction, degree) - turns the motor to a certiain degree 
 
+startmotor(distance) - moves forward in a specific distance in milimeters
+startmotorslow1(distance) - same with startmotor but 25 power
+startmotorslow2(distance) - same with startmotor but 12 power
+
+nstartmotor(distance) - moves backward in a specific distance in milimeters
+nstartmotorslow1(distance) - same with nstartmotor but 25 speed
+nstartmotorslow1(distance) - same with nstartmotor but 12 speed
+
+leftlineturn(lturnspeed) - turns left after detection by linefollow
+rightlineturn(lturnspeed) - turns right after detection by linefollow
+
+turnleft(degree) - turn to a specified degree to the left
+turnright(degree) - turn to a specified degree to the right
+
+leftturn(degree) - same with leftturn but only moves one wheel
+rightturn(degree) - same with righturn but only moves one wheel 
+
+linefollow(inter=t,l,r) - detects either one of the three types of intersection
+linefollowslow1(inter=t,l,r) - same with linefollow but with 25 power
+linefollowslow2(inter=t,l,r) - same with linefollow but with 12 power
+time(distance) - amount of distance it will follow the line
+
+motor(motor,power) - motor = motor# - power = strength of motor
+motorstrong1(motor=1,power=60)
+
+wait(time) - amount of time the robot will remain not moving
+stopmotor() - turn off all moving motors
+
+motordeg(port, direction, degree) - turns the motor to a certiain degree 
+motordegstrong(port, direction, degree) - same with motor deg but stronger
 '''
 
 import pyperclip
@@ -48,12 +67,49 @@ def startmotor(distance):
     f.write(str(time))
     f.write(');\n')
 
+def startmotorslow1(distance):
+    global name 
+    f = open(name, "a+")
+    
+    time = (distance/475)*2
+    f.write('    WER_SetMotor(25,25,\t')
+    f.write(str(time))
+    f.write(');\n')
+
+def startmotorslow2(distance):
+    global name 
+    f = open(name, "a+")
+    
+    time = (distance/475)*4
+    f.write('    WER_SetMotor(12,12,\t')
+    f.write(str(time))
+    f.write(');\n')
+    
+
 def nstartmotor(distance):
     global name 
     f = open(name, "a+")
     
     time = distance/475
     f.write('    WER_SetMotor(-50,-50,\t')
+    f.write(str(time))
+    f.write(');\n')
+
+def nstartmotorslow1(distance):
+    global name 
+    f = open(name, "a+")
+    
+    time = (distance/475)*2
+    f.write('    WER_SetMotor(-25, -25,\t')
+    f.write(str(time))
+    f.write(');\n')
+
+def nstartmotorslow2(distance):
+    global name 
+    f = open(name, "a+")
+    
+    time = (distance/475)*4
+    f.write('    WER_SetMotor(-12,-12,\t')
     f.write(str(time))
     f.write(');\n')
     
@@ -82,19 +138,57 @@ def turnleft(degree):
     global name 
     f = open(name , "a+") 
     degree1 = 0.0067
-    degree2 = degree1*degree
+    time = degree1*degree
     f.write('    WER_SetMotor(-30,30,\t')
-    f.write(str(degree2))
+    f.write(str(time))
     f.write(');\n')
 
 def turnright(degree):
     global name 
     f = open(name, "a+") 
     degree1 = 0.0067
-    degree2 = degree1*degree
+    time = degree1*degree
     f.write('    WER_SetMotor(30,-30,\t')
-    f.write(str(degree2))
+    f.write(str(time))
     f.write(');\n')
+
+def rightturn(degree):
+    global name 
+    f = open(name, "a+")
+    if degree > 0:
+        degree1 = 1.09/90
+        time = degree1*degree
+        f.write('    WER_SetMotor(30,0,\t')
+        f.write(str(time))
+        f.write(');\n')
+
+    elif degree < 0:
+        degree = degree*-1
+        degree1 = 1.09/90
+        time = degree1*degree
+        f.write('    WER_SetMotor(-30,0,\t')
+        f.write(str(time))
+        f.write(');\n')
+
+def leftturn(degree):
+    global name 
+    f = open(name, "a+")
+    if degree > 0:
+        degree1 = 1.09/90
+        time = degree1*degree
+        f.write('    WER_SetMotor(0,30,\t')
+        f.write(str(time))
+        f.write(');\n')
+
+    elif degree < 0:
+        degree = degree*-1
+        degree1 = 1.09/90
+        time = degree1*degree
+        f.write('    WER_SetMotor(0,-30,\t')
+        f.write(str(time))
+        f.write(');\n')
+
+        
         
 def linefollow(inter):
     global name 
@@ -110,6 +204,33 @@ def linefollow(inter):
     elif "l" in inter:
         f.write("    WER_LineWay_C(50,1,0.2);\n")
 
+def linefollowslow1(inter):
+    global name 
+    f = open(name, "a+") 
+    if "t" in inter:
+        f.write("    WER_LineWay_C(25,15,0.4);\n")
+       
+        
+    elif "r" in inter:
+        f.write("    WER_LineWay_C(25,5,0.4);\n")
+       
+        
+    elif "l" in inter:
+        f.write("    WER_LineWay_C(25,1,0.4);\n")
+
+def linefollowslow2(inter):
+    global name 
+    f = open(name, "a+") 
+    if "t" in inter:
+        f.write("    WER_LineWay_C(12,15,0.8);\n")
+               
+    elif "r" in inter:
+        f.write("    WER_LineWay_C(12,5,0.8);\n")
+       
+        
+    elif "l" in inter:
+        f.write("    WER_LineWay_C(12  ,1,0.8);\n")
+
 def button():
     global name 
     f = open(name, "a+") 
@@ -123,6 +244,17 @@ def motor(motor=1,power=30):
     f.write(",\t")
     f.write(str(power))
     f.write(");\n")
+
+def motorstrong1(motor=1,power=60):
+    global name 
+    f = open(name , "a+") 
+    f.write("    SetMoto(\t")
+    f.write(str(motor))
+    f.write(",\t")
+    f.write(str(power))
+    f.write(");\n")
+
+
 
 def wait(time):
     global name 
@@ -147,6 +279,14 @@ def time(distance):
     f.write(str(time))
     f.write(");\n")
 
+def timeslow2(distance):
+    time = (distance/475)*4
+    global name 
+    f = open(name, "a+") 
+    f.write("    WER_LineWay_T(12,\t")
+    f.write(str(time))
+    f.write(");\n")
+
 def motordeg(port, direction, degree):
     global name
     time = degree*(1/400)
@@ -158,6 +298,20 @@ def motordeg(port, direction, degree):
 
     elif direction =="l":
         motor(port,-30)
+        wait(time)
+        stopmotor()
+
+def motordegstrong(port, direction, degree):
+    global name
+    time = (degree*(1/400))/2
+    f = open(name, "a+")
+    if direction == "r":
+        motor(port,60)
+        wait(time)
+        stopmotor()
+
+    elif direction =="l":
+        motor(port,-60)
         wait(time)
         stopmotor()
         
@@ -304,9 +458,36 @@ def loc10right():
 
 
 
-       
+name = 'stickslap.txt'
+clear()
+initialize()
+button()
+loc4()
+time(60)
+rightlineturn()
+linefollow('r')
+rightlineturn()
+linefollow('r')
+linefollow('r')
+rightlineturn()
+time(130)
+time(150)
+nstartmotorslow1(150)
+timeslow2(160)
+nstartmotor(55)
+rightturn(220)
+startmotor(600)
+end()
+clipboard()
 
-       
+
+
+
+
+
+
+
+
 
 
 
